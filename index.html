@@ -7,137 +7,244 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-
-  <!-- Header / Hero Section -->
   <header>
     <div>
-      <!-- Ask Copilot to teach you about `.svg`. 🙂 You'll need to resize the logo with CSS. -->
-      <img src="img/intel-header-logo.svg" alt="Intel Logo" />
-      <!-- Main Heading -->
-      <h1>
-        Sustainability Through the Ages
-      </h1>
-
-      <!-- Subheading / Description -->
+      <img class="intel-logo" src="img/intel-header-logo.svg" alt="Intel Logo" />
+      <h1>Sustainability Through the Ages</h1>
       <p>
         Explore Intel's journey through time, discovering how our commitment
-        to innovation has shaped a more sustainable future for technology 
+        to innovation has shaped a more sustainable future for technology
         and our planet.
       </p>
     </div>
   </header>
 
-  <!-- Timeline Cards Section -->
-  <section>
+  <main class="page-content">
+    <div class="timeline-layout">
+      <aside class="year-sidebar" aria-label="Year list">
+        <div class="year-sidebar-label">Years</div>
+        <div id="yearList" class="year-list"></div>
+      </aside>
 
-    <!-- Card 1: 1968 -->
-    <div>
-      <h2>1968</h2>
-      <h3>Intel Founded</h3>
-      <!-- Add image -->
-      <p>
-        Robert Noyce and Gordon Moore rename the newly formed company 
-        NM Electronics to Intel Corporation, laying the foundation for 
-        decades of technological innovation.
-      </p>
+      <div class="timeline-content">
+
+        <section class="cube-scene" aria-label="Timeline cube">
+          <div id="timelineCube" class="cube">
+            <div class="cube-face cube-front"></div>
+            <div class="cube-face cube-right"></div>
+            <div class="cube-face cube-back"></div>
+            <div class="cube-face cube-left"></div>
+            <div class="cube-face cube-top"></div>
+            <div class="cube-face cube-bottom"></div>
+          </div>
+        </section>
+      </div>
     </div>
 
-    <!-- Card 2: 1971 -->
-    <div>
-      <h2>1971</h2>
-      <h3>First Microprocessor</h3>
-      <!-- Add image -->
-      <p>
-        Intel debuts the 4004, the world's first commercial microprocessor, 
-        igniting the microprocessor revolution and propelling the future 
-        of computing devices.
-      </p>
+    <div class="year-slider" aria-label="Timeline year slider" hidden>
+      <div id="yearTrack" class="year-track"></div>
+      <div id="sliderDot" class="slider-dot" aria-hidden="true"></div>
     </div>
+  </main>
 
-    <!-- Card 3: 1978 -->
-    <div>
-      <h2>1978</h2>
-      <h3>8086 Processor</h3>
-      <!-- Add image -->
-      <p>
-        Launch of the 8086 processor, establishing the x86 architecture 
-        that drives countless PCs and servers in the modern era.
-      </p>
-    </div>
+  <script>
+    // Timeline data for the years and descriptions.
+    const timelineData = [
+      {
+        year: '1968',
+        title: 'Intel Founded',
+        text: 'Robert Noyce and Gordon Moore rename the newly formed company NM Electronics to Intel Corporation, laying the foundation for decades of technological innovation.',
+        image: '1.jpg'
+      },
+      {
+        year: '1971',
+        title: 'First Microprocessor',
+        text: 'Intel debuts the 4004, the world\'s first commercial microprocessor, igniting the microprocessor revolution and propelling the future of computing devices.',
+        image: '2.jpg'
+      },
+      {
+        year: '1978',
+        title: '8086 Processor',
+        text: 'Launch of the 8086 processor, establishing the x86 architecture that drives countless PCs and servers in the modern era.',
+        image: '3.jpg'
+      },
+      {
+        year: '1985',
+        title: '386 Processor',
+        text: 'Intel introduces the 386 processor with 32-bit architecture, ushering in a new era of performance and multitasking for personal computers.',
+        image: '4.jpg'
+      },
+      {
+        year: '2006',
+        title: 'Peak GHG Emissions',
+        text: 'This year marks Intel\'s highest annual greenhouse gas emissions for operations. Over subsequent years, Intel invests heavily in chemical abatement, renewable energy, and energy-efficient manufacturing to reverse this trend.',
+        image: '2006.jpg'
+      },
+      {
+        year: '2020',
+        title: 'RISE Strategy',
+        text: 'Intel launches its RISE (Responsible, Inclusive, Sustainable, Enabling) strategy and 2030 goals, aiming to drive industry-wide progress on climate action, water stewardship, and waste reduction.',
+        image: '2020.jpg'
+      },
+      {
+        year: '2022',
+        title: 'Net-Zero By 2040',
+        text: 'Intel announces its commitment to achieve net-zero greenhouse gas emissions (Scope 1 and 2) across its global operations by 2040, building on years of environmental initiatives.',
+        image: '2022.jpg'
+      },
+      {
+        year: '2023',
+        title: 'Renewable Electricity',
+        text: 'The company achieves 99% renewable electricity usage worldwide, helping to drastically lower carbon emissions and driving progress toward Intel\'s long-term sustainability goals.',
+        image: '2023.jpg'
+      },
+      {
+        year: '2024',
+        title: 'Sustainability Summit',
+        text: 'Intel hosts its first Sustainability Summit, uniting suppliers, government officials, and industry leaders to collaborate on next-generation sustainable semiconductor manufacturing.',
+        image: '2024.jpg'
+      }
+    ];
 
-    <!-- Card 4: 1985 -->
-    <div>
-      <h2>1985</h2>
-      <h3>386 Processor</h3>
-      <!-- Add image -->
-      <p>
-        Intel introduces the 386 processor with 32-bit architecture, 
-        ushering in a new era of performance and multitasking for 
-        personal computers.
-      </p>
-    </div>
+    // Grab the main pieces from the HTML.
+    const yearList = document.getElementById('yearList');
+    const cube = document.getElementById('timelineCube');
+    const cubeFaces = {
+      front: document.querySelector('.cube-front'),
+      right: document.querySelector('.cube-right'),
+      back: document.querySelector('.cube-back'),
+      left: document.querySelector('.cube-left'),
+      top: document.querySelector('.cube-top'),
+      bottom: document.querySelector('.cube-bottom')
+    };
 
-    <!-- Card 5: 2006 -->
-    <div>
-      <h2>2006</h2>
-      <h3>Peak GHG Emissions</h3>
-      <!-- Add image -->
-      <p>
-        This year marks Intel's highest annual greenhouse gas emissions 
-        for operations. Over subsequent years, Intel invests heavily in 
-        chemical abatement, renewable energy, and energy-efficient 
-        manufacturing to reverse this trend.
-      </p>
-    </div>
+    let selectedIndex = 0;
+    let isDragging = false;
+    let wheelAccumulator = 0;
+    let cubeRotationY = 0;
+    const wheelThreshold = 60;
 
-    <!-- Card 6: 2020 -->
-    <div>
-      <h2>2020</h2>
-      <h3>RISE Strategy</h3>
-      <!-- Add image -->
-      <p>
-        Intel launches its RISE (Responsible, Inclusive, Sustainable, 
-        Enabling) strategy and 2030 goals, aiming to drive industry-wide 
-        progress on climate action, water stewardship, and waste reduction.
-      </p>
-    </div>
+    const cubeFaceOrder = [
+      { name: 'front', x: 0, y: 0 },
+      { name: 'right', x: 0, y: -90 },
+      { name: 'back', x: 0, y: -180 },
+      { name: 'left', x: 0, y: 90 },
+      { name: 'top', x: -90, y: 0 },
+      { name: 'bottom', x: 90, y: 0 }
+    ];
 
-    <!-- Card 7: 2022 -->
-    <div>
-      <h2>2022</h2>
-      <h3>Net-Zero By 2040</h3>
-      <!-- Add image -->
-      <p>
-        Intel announces its commitment to achieve net-zero greenhouse 
-        gas emissions (Scope 1 and 2) across its global operations 
-        by 2040, building on years of environmental initiatives.
-      </p>
-    </div>
+    function clearCubeFaces() {
+      Object.values(cubeFaces).forEach((face) => {
+        face.classList.remove('active');
+        face.innerHTML = '<div class="blank-face"></div>';
+      });
+    }
 
-    <!-- Card 8: 2023 -->
-    <div>
-      <h2>2023</h2>
-      <h3>Renewable Electricity</h3>
-      <!-- Add image -->
-      <p>
-        The company achieves 99% renewable electricity usage worldwide, 
-        helping to drastically lower carbon emissions and driving progress 
-        toward Intel's long-term sustainability goals.
-      </p>
-    </div>
+    function setActiveFace(selectedFaceName, item) {
+      clearCubeFaces();
 
-    <!-- Card 9: 2024 -->
-    <div>
-      <h2>2024</h2>
-      <h3>Sustainability Summit</h3>
-      <!-- Add image -->
-      <p>
-        Intel hosts its first Sustainability Summit, uniting suppliers, 
-        government officials, and industry leaders to collaborate on 
-        next-generation sustainable semiconductor manufacturing.
-      </p>
-    </div>
-  </section>
-  <p>Scroll to view timeline | Hover over cards to learn more!</p>
+      const activeFace = cubeFaces[selectedFaceName];
+      activeFace.classList.add('active');
+      activeFace.style.backgroundImage = `linear-gradient(rgba(5, 25, 42, 0.35), rgba(5, 25, 42, 0.35)), url('img/${item.image}')`;
+      activeFace.style.backgroundSize = 'cover';
+      activeFace.style.backgroundPosition = 'center';
+      activeFace.innerHTML = `
+        <div class="cube-card">
+          <span class="cube-year">${item.year}</span>
+          <h3>${item.title}</h3>
+          <p>${item.text}</p>
+        </div>
+      `;
+    }
+
+    function rotateCubeToYear(index) {
+      cube.style.transform = `rotateX(0deg) rotateY(${cubeRotationY}deg)`;
+    }
+
+    function updateYearList() {
+      const items = [...yearList.children];
+      items.forEach((item, index) => {
+        item.classList.toggle('active', index === selectedIndex);
+      });
+
+      const activeItem = yearList.children[selectedIndex];
+      if (activeItem) {
+        const listTop = yearList.scrollTop;
+        const activeTop = activeItem.offsetTop;
+        const activeHeight = activeItem.offsetHeight;
+        const middle = listTop + (yearList.clientHeight / 2) - (activeHeight / 2);
+
+        if (Math.abs(activeTop - middle) > 2) {
+          yearList.scrollTo({
+            top: activeTop - (yearList.clientHeight / 2) + (activeHeight / 2),
+            behavior: 'smooth'
+          });
+        }
+      }
+    }
+
+    function selectYear(index) {
+      const previousIndex = selectedIndex;
+      selectedIndex = Math.max(0, Math.min(index, timelineData.length - 1));
+
+      const movement = selectedIndex - previousIndex;
+      if (movement !== 0) {
+        cubeRotationY += movement * 90;
+      }
+
+      const item = timelineData[selectedIndex];
+      const faceName = cubeFaceOrder[selectedIndex % cubeFaceOrder.length].name;
+
+      setActiveFace(faceName, item);
+      rotateCubeToYear(selectedIndex);
+      updateYearList();
+    }
+
+    let touchStartY = 0;
+
+    function handleWheelRotation(event) {
+      event.preventDefault();
+
+      wheelAccumulator += event.deltaY;
+
+      if (Math.abs(wheelAccumulator) < wheelThreshold) {
+        return;
+      }
+
+      const direction = wheelAccumulator > 0 ? 1 : -1;
+      wheelAccumulator = 0;
+      selectYear(selectedIndex + direction);
+    }
+
+    function handleTouchStart(event) {
+      touchStartY = event.touches[0].clientY;
+    }
+
+    function handleTouchMove(event) {
+      const currentY = event.touches[0].clientY;
+      const distance = currentY - touchStartY;
+
+      if (Math.abs(distance) < 60) return;
+
+      const direction = distance > 0 ? -1 : 1;
+      touchStartY = currentY;
+      selectYear(selectedIndex + direction);
+    }
+
+    window.addEventListener('wheel', handleWheelRotation, { passive: false });
+    window.addEventListener('touchstart', handleTouchStart, { passive: true });
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
+
+    timelineData.forEach((item, index) => {
+      const listItem = document.createElement('div');
+      listItem.className = 'year-list-item';
+      listItem.textContent = item.year;
+      listItem.classList.toggle('active', index === selectedIndex);
+      yearList.appendChild(listItem);
+    });
+
+    clearCubeFaces();
+    selectYear(0);
+  </script>
 </body>
 </html>
