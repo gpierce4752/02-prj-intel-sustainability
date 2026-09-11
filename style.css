@@ -244,7 +244,7 @@ header p {
 }
 
 .year-button {
-  background: transparent;
+  background:transparent;
   border: none;
   color: #dfeeff;
   font-size: clamp(0.7rem, 1.5vw, 1rem);

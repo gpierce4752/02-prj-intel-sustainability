@@ -121,7 +121,6 @@
     let selectedIndex = 0;
     let isDragging = false;
     let wheelAccumulator = 0;
-    let cubeRotationY = 0;
     const wheelThreshold = 60;
 
     const cubeFaceOrder = [
@@ -133,6 +132,22 @@
       { name: 'bottom', x: 90, y: 0 }
     ];
 
+    const imageFallbacks = {
+      '1.jpg': '1.jpg',
+      '2.jpg': '2.jpg',
+      '3.jpg': '3.jpg',
+      '4.jpg': '4.jpg',
+      '2006.jpg': '2006.jpg',
+      '2020.jpg': '2006.jpg',
+      '2022.jpg': '2024.jpg',
+      '2023.jpg': '2024.jpg',
+      '2024.jpg': '2024.jpg'
+    };
+
+    function getImageForItem(item) {
+      return imageFallbacks[item.image] || '1.jpg';
+    }
+
     function clearCubeFaces() {
       Object.values(cubeFaces).forEach((face) => {
         face.classList.remove('active');
@@ -143,9 +158,10 @@
     function setActiveFace(selectedFaceName, item) {
       clearCubeFaces();
 
+      const imageName = getImageForItem(item);
       const activeFace = cubeFaces[selectedFaceName];
       activeFace.classList.add('active');
-      activeFace.style.backgroundImage = `linear-gradient(rgba(5, 25, 42, 0.35), rgba(5, 25, 42, 0.35)), url('img/${item.image}')`;
+      activeFace.style.backgroundImage = `linear-gradient(rgba(5, 25, 42, 0.35), rgba(5, 25, 42, 0.35)), url('img/${imageName}')`;
       activeFace.style.backgroundSize = 'cover';
       activeFace.style.backgroundPosition = 'center';
       activeFace.innerHTML = `
@@ -158,13 +174,17 @@
     }
 
     function rotateCubeToYear(index) {
-      cube.style.transform = `rotateX(0deg) rotateY(${cubeRotationY}deg)`;
+      const face = cubeFaceOrder[index % cubeFaceOrder.length];
+      cube.style.transform = `rotateX(${face.x}deg) rotateY(${face.y}deg)`;
     }
 
     function updateYearList() {
       const items = [...yearList.children];
       items.forEach((item, index) => {
         item.classList.toggle('active', index === selectedIndex);
+        item.setAttribute('tabindex', '0');
+        item.setAttribute('role', 'button');
+        item.setAttribute('aria-label', `Select year ${timelineData[index].year}`);
       });
 
       const activeItem = yearList.children[selectedIndex];
@@ -184,16 +204,11 @@
     }
 
     function selectYear(index) {
-      const previousIndex = selectedIndex;
       selectedIndex = Math.max(0, Math.min(index, timelineData.length - 1));
 
-      const movement = selectedIndex - previousIndex;
-      if (movement !== 0) {
-        cubeRotationY += movement * 90;
-      }
-
       const item = timelineData[selectedIndex];
-      const faceName = cubeFaceOrder[selectedIndex % cubeFaceOrder.length].name;
+      const face = cubeFaceOrder[selectedIndex % cubeFaceOrder.length];
+      const faceName = face.name;
 
       setActiveFace(faceName, item);
       rotateCubeToYear(selectedIndex);
@@ -231,15 +246,35 @@
       selectYear(selectedIndex + direction);
     }
 
+    function handleKeyboardInput(event) {
+      if (['ArrowRight', 'ArrowDown', 'PageDown'].includes(event.key)) {
+        event.preventDefault();
+        selectYear(selectedIndex + 1);
+      }
+
+      if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(event.key)) {
+        event.preventDefault();
+        selectYear(selectedIndex - 1);
+      }
+    }
+
     window.addEventListener('wheel', handleWheelRotation, { passive: false });
     window.addEventListener('touchstart', handleTouchStart, { passive: true });
     window.addEventListener('touchmove', handleTouchMove, { passive: true });
+    window.addEventListener('keydown', handleKeyboardInput);
 
     timelineData.forEach((item, index) => {
       const listItem = document.createElement('div');
       listItem.className = 'year-list-item';
       listItem.textContent = item.year;
       listItem.classList.toggle('active', index === selectedIndex);
+      listItem.addEventListener('click', () => selectYear(index));
+      listItem.addEventListener('keydown', (event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          selectYear(index);
+        }
+      });
       yearList.appendChild(listItem);
     });
 
